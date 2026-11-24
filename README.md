@@ -1,5 +1,7 @@
 # Delta-Bench
 
+Blog post: https://blog.munhou.com/Inkling-2-Mini-on-Delta-Lake/
+
 Do models that predict tool outputs well also act well? This repository runs open models on
 [Delta-World](https://github.com/munhouiani/delta_world), a simulated Databricks workspace with Delta
 Lake tasks, and gives each model two scores:
