@@ -1,0 +1,7 @@
+Delta-Bench
+Copyright 2026 Mun Hou Wong
+
+Licensed under the Apache License, Version 2.0. See LICENSE.
+
+Delta-World (third_party/delta_world, a git submodule) is a separate work under the Apache
+License, Version 2.0; see its own LICENSE and NOTICE.

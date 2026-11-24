@@ -1,0 +1,7 @@
+a,b,role,b_minus_a,low,high
+inkling-2-mini,qwen3.8-27b,pred,3.2985,3.1097,3.5017
+inkling-2-mini,qwen3.8-27b,body,3.4695,3.3608,3.583
+inkling-2-mini,nemotron-3.5-lightning,pred,-1.189,-1.2525,-1.1223
+inkling-2-mini,nemotron-3.5-lightning,body,-1.265,-1.3148,-1.2166
+qwen3.8-27b,nemotron-3.5-lightning,pred,-4.4875,-4.7237,-4.2566
+qwen3.8-27b,nemotron-3.5-lightning,body,-4.7346,-4.867,-4.6038

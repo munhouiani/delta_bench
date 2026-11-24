@@ -1,0 +1,4 @@
+model,episodes,observations,bpb_pred,bpb_pred_low,bpb_pred_high,top1_pred,bpb_body,bpb_body_low,bpb_body_high,top1_body,coverage
+inkling-2-mini,600,6032,2.3923,2.3268,2.4581,0.4215,1.8235,1.7783,1.8675,0.5378,0.919
+qwen3.8-27b,600,6032,5.6907,5.4586,5.933,0.2284,5.293,5.1694,5.4183,0.2713,0.9059
+nemotron-3.5-lightning,600,6032,1.2032,1.158,1.2576,0.5762,0.5584,0.5396,0.578,0.7797,0.9065

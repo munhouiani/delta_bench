@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+
+# Secrets
+.env
+
+# Traces, likelihoods, tables
+data/
+
+# Editors and macOS
+.idea/
+.vscode/
+.DS_Store

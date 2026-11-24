@@ -1,0 +1,83 @@
+# Every setting of this repository. Delta-World's own (turn limit, new tokens per turn, the
+# simulator) are in third_party/delta_world/config.yaml.
+
+# One entry per model. To add one, start from its card or vLLM recipe.
+#   image            a vLLM container image, for a model serving.vllm_version cannot load; or null
+#   vllm             engine arguments, for the server and for scoring alike
+#   sampling         sent with every request; max_tokens comes from Delta-World
+#   scoring_engine   what computes the log-probs of the tool outputs: vllm or transformers
+models:
+  inkling-2-mini:
+    weights: thinkingmachines/Inkling-2-Mini
+    revision: 7a67ae2314b44ef05c87fd1d4d311c58aaeb18f6
+    gpu: H100
+    # vLLM 0.32.0 lacks this architecture.
+    image: vllm/vllm-openai:nightly-eff4de9be3c901c6ad12cb651de64e4b10ced219
+    vllm: {dtype: auto, max_num_seqs: 64}
+    tool_call_parser: inkling
+    reasoning_parser: inkling
+    chat_template_kwargs: {reasoning_effort: none}  # the lowest setting; the model still reasons a little
+    sampling: {temperature: 0.6, top_p: 1.0}
+    scoring_engine: vllm
+  qwen3.8-27b:
+    weights: Qwen/Qwen3.8-27B
+    revision: 37561816e66b5b9153b1b64c10968c18c1e6f4a0
+    gpu: H100
+    image: null
+    # max_num_seqs: the layers with linear attention hold one state block per sequence, and vLLM's
+    # default of 1,024 sequences does not fit.
+    vllm: {dtype: bfloat16, max_num_seqs: 64, language_model_only: true}
+    tool_call_parser: qwen3_coder
+    reasoning_parser: qwen3
+    chat_template_kwargs: {enable_thinking: false}
+    sampling: {temperature: 0.7, top_p: 0.8, top_k: 20, presence_penalty: 1.5}
+    scoring_engine: vllm
+  nemotron-3.5-lightning:
+    weights: nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16
+    revision: a9904d24bcc1d289a1950fa9d2b978c47cf903b9
+    gpu: H100
+    image: null
+    # A Mamba hybrid: CUDA graphs corrupt its state, and prefix caching does not fully support it.
+    vllm:
+      dtype: bfloat16
+      max_num_seqs: 64
+      enforce_eager: true
+      enable_prefix_caching: false
+      mamba_ssm_cache_dtype: float32
+    tool_call_parser: qwen3_coder
+    reasoning_parser: nemotron_v3
+    chat_template_kwargs: {enable_thinking: false}
+    sampling: {temperature: 1.0, top_p: 0.95}
+    # vLLM 0.32.0's prompt log-probs for this model are 5.8% worse, and off by up to 8 nats per token.
+    scoring_engine: transformers
+
+serving:
+  vllm_version: 0.32.0
+  port: 8000
+  max_model_len: 32768
+  max_concurrent_requests: 64
+  timeout_s: 21600
+  startup_timeout_s: 1800
+
+# Acting. Each split has 40 instances in each of 5 task families.
+evaluation:
+  splits: [dev, test-ood-hard]
+  per_family: 40
+  samples: 4
+  concurrency: 10  # episodes at once, per simulator
+  episodes_per_simulator: 480  # a simulator runs out of its 4 GB heap somewhere near 600
+  read_timeout_s: 300  # a request the server never answers fails its episode, rather than hanging the run
+  episode_timeout_s: 1800
+  cpu: 8
+  memory_mb: 16384
+  timeout_s: 14400
+
+# Predicting. Every model scores the same pool: each model's first clean rollout of every instance.
+scoring:
+  split: dev
+  timeout_s: 7200
+  bootstrap_resamples: 2000
+
+modal:
+  hf_cache_volume: delta-world-hf-cache  # model weights; created on first use
+  api_key_secret: delta-world-episodes  # must hold DW_SERVICE_TOKEN, the key of your vLLM server
